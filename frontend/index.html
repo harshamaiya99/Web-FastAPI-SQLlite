@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bank Account Management</title>
+    <style>
+        body { font-family: Arial; margin: 30px; }
+        input { padding: 6px; }
+        button { padding: 6px 10px; margin-left: 5px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+<h2>Create Account</h2>
+
+<form onsubmit="createAccount(event)">
+    Name: <input type="text" id="name" required>
+    Email: <input type="email" id="email" required>
+    <button type="submit">Create</button>
+</form>
+
+<p id="message"></p>
+
+<h2>Accounts</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="accountsTable"></tbody>
+</table>
+
+<script>
+const API = "http://127.0.0.1:9000";
+
+async function createAccount(event) {
+    event.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+
+    await fetch(`${API}/accounts`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name, email})
+    });
+
+    document.getElementById("name").value = "";
+    document.getElementById("email").value = "";
+    loadAccounts();
+}
+
+async function loadAccounts() {
+    const response = await fetch(`${API}/accounts`);
+    const accounts = await response.json();
+
+    const table = document.getElementById("accountsTable");
+    table.innerHTML = "";
+
+    accounts.forEach(acc => {
+        table.innerHTML += `
+            <tr>
+                <td>${acc.id}</td>
+                <td>
+                    <input value="${acc.name}" id="name-${acc.id}">
+                </td>
+                <td>
+                    <input value="${acc.email}" id="email-${acc.id}">
+                </td>
+                <td>
+                    <button onclick="updateAccount(${acc.id})">Update</button>
+                    <button onclick="deleteAccount(${acc.id})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function updateAccount(id) {
+    const name = document.getElementById(`name-${id}`).value;
+    const email = document.getElementById(`email-${id}`).value;
+
+    await fetch(`${API}/accounts/${id}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name, email})
+    });
+
+    loadAccounts();
+}
+
+async function deleteAccount(id) {
+    await fetch(`${API}/accounts/${id}`, {
+        method: "DELETE"
+    });
+
+    loadAccounts();
+}
+
+// Load accounts on page load
+loadAccounts();
+</script>
+
+</body>
+</html>
