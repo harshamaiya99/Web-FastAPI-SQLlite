@@ -1,5 +1,5 @@
 import random
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from database import get_connection
 from models import AccountCreate, AccountUpdate
 
@@ -36,6 +36,32 @@ def create_account(account: AccountCreate) -> Dict:
     conn.close()
 
     return {"account_id": account_id, "message": "Account created successfully"}
+
+
+def get_all_accounts() -> List[Dict]:
+    """Get all accounts"""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM accounts")
+    rows = cursor.fetchall()
+    conn.close()
+
+    accounts = []
+    for row in rows:
+        accounts.append({
+            "account_id": row["account_id"],
+            "account_holder_name": row["account_holder_name"],
+            "email": row["email"],
+            "phone": row["phone"],
+            "address": row["address"],
+            "account_type": row["account_type"],
+            "balance": row["balance"],
+            "date_opened": row["date_opened"],
+            "status": row["status"]
+        })
+
+    return accounts
 
 
 def get_account_by_id(account_id: str) -> Optional[Dict]:

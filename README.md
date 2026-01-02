@@ -1,6 +1,10 @@
 uvicorn main:app --app-dir backend --reload --port 9000
 
+C:\Users\maiya>netstat -ano | findstr :9000
+  TCP    127.0.0.1:9000         0.0.0.0:0              LISTENING       23996
 
+C:\Users\maiya>taskkill /PID 23996 /F
+SUCCESS: The process with PID 23996 has been terminated.
 
 You have 3 easy ways to check database.db.
 
