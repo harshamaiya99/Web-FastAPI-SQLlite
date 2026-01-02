@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from typing import List
 import os
 from models import AccountCreate, AccountUpdate, AccountResponse
 import crud
@@ -27,6 +28,12 @@ def create_account_page(request: Request):
     return templates.TemplateResponse("createAccount.html", {"request": request})
 
 # API Routes
+@api_router.get("", response_model=List[AccountResponse])
+def get_all_accounts():
+    """Get all accounts"""
+    accounts = crud.get_all_accounts()
+    return accounts
+
 @api_router.post("", status_code=201)
 def create_account(account: AccountCreate):
     """Create a new account"""
