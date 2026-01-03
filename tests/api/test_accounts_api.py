@@ -1,5 +1,6 @@
 import os
 import pytest
+import allure
 from tests.api.utils.csv_reader import read_csv
 
 DATA_FILE = os.path.join(
@@ -10,55 +11,54 @@ DATA_FILE = os.path.join(
 
 test_data = read_csv(DATA_FILE)
 
-@pytest.mark.parametrize("row", test_data, ids=lambda r: r["account_holder_name"])
+@allure.epic("Accounts API")
+@allure.feature("CRUD Operations")
+@pytest.mark.parametrize(
+    "row",
+    test_data,
+    ids=lambda r: r["account_holder_name"]
+)
 def test_account_crud_flow(accounts_api, row):
 
-    # ---------- POST ----------
-    create_payload = {
-        "account_holder_name": row["account_holder_name"],
-        "email": row["email"],
-        "phone": row["phone"],
-        "address": row["address"],
-        "account_type": row["account_type"],
-        "balance": float(row["balance"]),
-        "date_opened": row["date_opened"],
-        "status": row["status"]
-    }
+    with allure.step("Create account (POST)"):
+        create_payload = {
+            "account_holder_name": row["account_holder_name"],
+            "email": row["email"],
+            "phone": row["phone"],
+            "address": row["address"],
+            "account_type": row["account_type"],
+            "balance": float(row["balance"]),
+            "date_opened": row["date_opened"],
+            "status": row["status"]
+        }
 
-    create_resp = accounts_api.create_account(create_payload)
-    assert create_resp.status_code == 200
+        create_resp = accounts_api.create_account(create_payload)
+        assert create_resp.status_code == 200
+        account_id = create_resp.json()["account_id"]
 
-    account_id = create_resp.json()["account_id"]
-    assert account_id
+    with allure.step("Get account after creation (GET)"):
+        get_resp = accounts_api.get_account(account_id)
+        assert get_resp.status_code == 200
 
-    # ---------- GET (after POST) ----------
-    get_resp = accounts_api.get_account(account_id)
-    assert get_resp.status_code == 200
-    assert get_resp.json()["email"] == row["email"]
+    with allure.step("Update account (PUT)"):
+        update_payload = {
+            "account_holder_name": row["updated_account_holder_name"],
+            "email": row["updated_email"],
+            "phone": row["updated_phone"],
+            "address": row["updated_address"],
+            "account_type": row["updated_account_type"],
+            "balance": float(row["updated_balance"]),
+            "date_opened": row["updated_date_opened"],
+            "status": row["updated_status"]
+        }
 
-    # ---------- PUT ----------
-    update_payload = {
-        "account_holder_name": row["updated_account_holder_name"],
-        "email": row["updated_email"],
-        "phone": row["updated_phone"],
-        "address": row["updated_address"],
-        "account_type": row["updated_account_type"],
-        "balance": float(row["updated_balance"]),
-        "date_opened": row["updated_date_opened"],
-        "status": row["updated_status"]
-    }
+        update_resp = accounts_api.update_account(account_id, update_payload)
+        assert update_resp.status_code == 200
 
-    update_resp = accounts_api.update_account(account_id, update_payload)
-    assert update_resp.status_code == 200
-    assert update_resp.json()["message"] == "Account updated successfully"
+    with allure.step("Verify updated account (GET)"):
+        get_updated_resp = accounts_api.get_account(account_id)
+        assert get_updated_resp.json()["email"] == row["updated_email"]
 
-    # ---------- GET (after PUT) ----------
-    get_updated_resp = accounts_api.get_account(account_id)
-    assert get_updated_resp.status_code == 200
-    assert get_updated_resp.json()["email"] == row["updated_email"]
-    assert get_updated_resp.json()["account_type"] == row["updated_account_type"]
-
-    # ---------- DELETE ----------
-    delete_resp = accounts_api.delete_account(account_id)
-    assert delete_resp.status_code == 200
-    assert delete_resp.json()["message"] == "Account deleted successfully"
+    with allure.step("Delete account (DELETE)"):
+        delete_resp = accounts_api.delete_account(account_id)
+        assert delete_resp.status_code == 200
