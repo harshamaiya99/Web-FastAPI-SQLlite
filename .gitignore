@@ -20,3 +20,6 @@ dist/
 *.egg-info/
 pip-wheel-metadata/
 .eggs/
+
+allure-results/
+allure-reports/
