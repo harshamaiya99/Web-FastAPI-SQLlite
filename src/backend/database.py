@@ -1,7 +1,9 @@
 import sqlite3
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Updated: Get the directory where this script (database.py) is located (i.e., backend/)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Updated: Look for database.db inside that same directory
 DB_PATH = os.path.join(BASE_DIR, "database.db")
 
 
