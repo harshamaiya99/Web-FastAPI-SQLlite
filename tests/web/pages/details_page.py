@@ -104,17 +104,17 @@ class DetailsPage(BasePage):
 
     @allure.step("Click on Update button")
     def update_account(self):
-        # Handle alert for update
-        self.page.once("dialog", lambda d: d.accept())
+        # Prepare to accept the "Updated!" alert
+        self.alert.accept_next()
         self.click(self.UPDATE_BTN)
         self.page.wait_for_load_state("networkidle")
 
-
-
-    def get_error_message(self):
-        """Waits for the error message to be visible and returns its text."""
-        self.page.wait_for_selector(self.ERROR_MSG, state="visible")
-        return self.get_text(self.ERROR_MSG)
+    @allure.step("Click on Delete account button")
+    def delete_account(self):
+        # Prepare to accept the "Delete this account?" confirmation
+        self.alert.accept_next()
+        self.click(self.DELETE_BTN)
+        self.page.wait_for_load_state("networkidle")
 
     def get_account_details(self):
         self.wait_for_details_to_load()
@@ -145,9 +145,4 @@ class DetailsPage(BasePage):
         # self.update_marketing_opt_in(data["updated_marketing_opt_in"])
         self.update_account()
 
-    @allure.step("Delete account")
-    def delete_account(self):
-        # Handle confirmation alert
-        self.page.once("dialog", lambda d: d.accept())
-        self.click(self.DELETE_BTN)
-        self.page.wait_for_load_state("networkidle")
+

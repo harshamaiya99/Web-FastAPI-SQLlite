@@ -69,19 +69,19 @@ class CreatePage(BasePage):
 
     @allure.step("Submit create account form")
     def submit_form_and_capture_account_id(self) -> str:
-        account_id = None
+        # Define trigger action
+        trigger = lambda: self.click(self.SUBMIT_BTN)
 
-        def handle_dialog(dialog):
-            nonlocal account_id
-            match = re.search(r"ID:\s*(\d+)", dialog.message)
-            if match:
-                account_id = match.group(1)
-            dialog.accept()
+        # Use centralized handler to click and get alert text
+        alert_text = self.alert.get_text_and_accept(trigger)
 
-        self.page.once("dialog", handle_dialog)
-        self.click(self.SUBMIT_BTN)
-        self.page.wait_for_load_state("networkidle")
-        return account_id
+        # Extract ID
+        match = re.search(r"ID:\s*(\d+)", alert_text)
+        if match:
+            account_id = match.group(1)
+            self.page.wait_for_load_state("networkidle")
+            return account_id
+        return None
 
     def create_new_account(self, data: dict) -> str:
         self.enter_name(data["account_holder_name"])

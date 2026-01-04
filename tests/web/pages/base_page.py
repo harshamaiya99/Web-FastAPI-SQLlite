@@ -1,8 +1,10 @@
 from playwright.sync_api import Page, expect
+from tests.web.utils.alert_handler import AlertHandler
 
 class BasePage:
     def __init__(self, page: Page):
         self.page = page
+        self.alert = AlertHandler(page)  # Centralized Alert Handler
 
     def navigate(self, url: str):
         self.page.goto(url)
