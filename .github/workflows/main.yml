@@ -76,20 +76,18 @@ jobs:
     - name: Generate Allure Report
       if: always()
       run: |
+        # Generates the full HTML report into the 'allure-report' folder
         allure generate allure-results --clean -o allure-report
 
     - name: Combine into Single HTML
       if: always()
       run: |
-        # Creates 'complete.html' inside allure-report folder
+        # Combines everything into 'allure-report/complete.html'
         allure-combine allure-report
-        
-        # RENAME it to your desired name
-        mv allure-report/complete.html allure-report/allure-report.html
-        
-        echo "Report renamed to allure-report.html"
 
     # --- STEP 4: UPDATE HISTORY BRANCH ---
+    # We push ONLY the 'history' folder to the 'allure-history' branch.
+    # This keeps the branch light and ensures trends persist.
     - name: Save History to Branch
       if: always()
       uses: peaceiris/actions-gh-pages@v3
@@ -98,7 +96,7 @@ jobs:
         publish_branch: allure-history
         publish_dir: allure-report/history
         destination_dir: history
-        keep_files: true
+        keep_files: true  # Keep existing history if we are appending
 
     # --- STEP 5: UPLOAD ARTIFACT ---
     - name: Upload Single File Report
@@ -106,6 +104,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: allure-report
-        # Point to the NEW filename
-        path: allure-report/allure-report.html
+        path: allure-report/complete.html
         retention-days: 15
