@@ -14,6 +14,7 @@ class CreatePage(BasePage):
     TYPE_SELECT = "#accountType"
     BALANCE_INPUT = "#balance"
     MARKETING_CHK = "#marketingOptIn"
+    SERVICE_SELECT = "input[name='services']"
     TERMS_CHK = "#agreedToTerms"
     SUBMIT_BTN = "button[type='submit']"
 
@@ -27,7 +28,7 @@ class CreatePage(BasePage):
 
     @allure.step("Select gender")
     def select_gender(self, gender):
-        self.click(f"input[name='gender'][value='{gender}']")
+        self.click(f"{self.GENDER_RADIO}[value='{gender}']")
 
     @allure.step("Enter email")
     def enter_email(self, email):
@@ -57,11 +58,11 @@ class CreatePage(BasePage):
     def select_services(self, services):
         if services:
             for service in services.split(","):
-                self.check(f"input[name='services'][value='{service.strip()}']")
+                self.check(f"{self.SERVICE_SELECT}[value='{service.strip()}']")
 
     @allure.step("Set marketing opt-in")
     def set_marketing_opt_in(self, opt_in):
-        if opt_in == "True":
+        if opt_in == "true":
             self.check(self.MARKETING_CHK)
 
     @allure.step("Accept terms and conditions")

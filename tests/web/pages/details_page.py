@@ -7,12 +7,15 @@ class DetailsPage(BasePage):
     ID_FIELD = "#accountId"
     NAME_INPUT = "#accountHolderName"
     DOB_INPUT = "#dob"
+    GENDER_RADIO = "input[name='gender']"
     EMAIL_INPUT = "#email"
     PHONE_INPUT = "#phone"
     ADDRESS_INPUT = "#address"
     ZIP_INPUT = "#zipCode"
     TYPE_SELECT = "#accountType"
     BALANCE_INPUT = "#balance"
+    STATUS_SELECT = "#status"
+    SERVICE_CHECKBOX = "input[name='services']"
     MARKETING_CHK = "#marketingOptIn"
     UPDATE_BTN = ".btn-update"
     DELETE_BTN = ".btn-delete"
@@ -62,8 +65,27 @@ class DetailsPage(BasePage):
 
     @allure.step("Get marketing_opt_in")
     def get_marketing_opt_in(self):
-        return self.get_input_value(self.MARKETING_CHK)
+        is_marketing_checked = self.page.locator(self.MARKETING_CHK).is_checked()
+        return "true" if is_marketing_checked else "false"
 
+    @allure.step("Get gender")
+    def get_gender(self):
+        # Returns the value of the CHECKED radio button
+        return self.page.locator(f"{self.GENDER_RADIO}:checked").get_attribute("value")
+
+    @allure.step("Get status")
+    def get_status(self):
+        # Returns the value of the select dropdown
+        return self.page.locator(self.STATUS_SELECT).input_value()
+
+    @allure.step("Get services")
+    def get_services(self):
+        # 1. Find all checked service checkboxes
+        # 2. Extract their values
+        # 3. Join with commas to match CSV format (e.g., "Debit Card,SMS Alerts")
+        checked_locators = self.page.locator(f"{self.SERVICE_CHECKBOX}:checked").all()
+        values = [loc.get_attribute("value") for loc in checked_locators]
+        return ",".join(values)
 
 
     @allure.step("Update account holder name")
@@ -98,9 +120,35 @@ class DetailsPage(BasePage):
     def update_balance(self, updated_balance):
         self.fill(self.BALANCE_INPUT, updated_balance)
 
-    # @allure.step("Update marketing_opt_in")
-    # def update_marketing_opt_in(self, updated_marketing_opt_in):
-    #     self.fill(self.MARKETING_CHK, updated_marketing_opt_in)
+    @allure.step("Update gender")
+    def update_gender(self, updated_gender):
+        self.click(f"{self.GENDER_RADIO}[value='{updated_gender}']")
+
+    @allure.step("Update status")
+    def update_status(self, updated_status):
+        self.select_option(self.STATUS_SELECT, updated_status)
+
+    @allure.step("Update services")
+    def update_services(self, services):
+        # 1. Uncheck all currently selected services
+        for checkbox in self.page.locator(self.SERVICE_CHECKBOX).all():
+            if checkbox.is_checked():
+                checkbox.uncheck()
+
+        # 2. Check only the services provided
+        if services:
+            for service in services.split(","):
+                self.check(f"{self.SERVICE_CHECKBOX}[value='{service.strip()}']")
+
+    @allure.step("Update marketing opt-in")
+    def update_marketing_opt_in(self, opt_in):
+        checkbox = self.page.locator(self.MARKETING_CHK)
+
+        if opt_in == "true" and not checkbox.is_checked():
+            checkbox.check()
+        elif opt_in == "false" and checkbox.is_checked():
+            checkbox.uncheck()
+
 
     @allure.step("Click on Update button")
     def update_account(self):
@@ -116,33 +164,40 @@ class DetailsPage(BasePage):
         self.click(self.DELETE_BTN)
         self.page.wait_for_load_state("networkidle")
 
-    def get_account_details(self):
-        self.wait_for_details_to_load()
-        self.get_account_id()
-        self.get_name()
-        self.get_dob()
-        # self.get_gender()
-        self.get_email()
-        self.get_phone()
-        self.get_address()
-        self.get_zip()
-        self.get_account_type()
-        self.get_balance()
-        # self.get_services()
-        self.get_marketing_opt_in()
-
     def update_account_details(self, data: dict) -> None:
         self.update_name(data["updated_account_holder_name"])
         self.update_dob(data["updated_dob"])
-        # self.select_gender(data["updated_gender"])
+        self.update_gender(data["updated_gender"])
         self.update_email(data["updated_email"])
         self.update_phone(data["updated_phone"])
         self.update_address(data["updated_address"])
         self.update_zip(data["updated_zip_code"])
         self.update_account_type(data["updated_account_type"])
         self.update_balance(data["updated_balance"])
-        # self.select_services(data["updated_services"])
-        # self.update_marketing_opt_in(data["updated_marketing_opt_in"])
+        self.update_status(data["updated_status"])
+        self.update_services(data["updated_services"])
+        self.update_marketing_opt_in(data["updated_marketing_opt_in"])
         self.update_account()
 
+    def get_account_details_as_dict(self) -> dict:
+        """
+        Scrapes all relevant fields from the Details page and returns them as a dictionary.
+        """
+        self.wait_for_details_to_load()
+
+        return {
+            "account_id": self.get_account_id(),
+            "account_holder_name": self.get_name(),
+            "dob": self.get_dob(),
+            "gender": self.get_gender(),
+            "email": self.get_email(),
+            "phone": self.get_phone(),
+            "address": self.get_address(),
+            "zip_code": self.get_zip(),
+            "account_type": self.get_account_type(),
+            "balance": self.get_balance(),
+            "status": self.get_status(),
+            "services": self.get_services(),
+            "marketing_opt_in": self.get_marketing_opt_in()
+        }
 
