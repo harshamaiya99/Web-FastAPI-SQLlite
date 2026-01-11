@@ -3,6 +3,7 @@ import allure
 import os
 from playwright.sync_api import expect
 from tests.web.utils.csv_reader import read_csv_data
+from tests.web.utils.assertion_logger import assert_ui_match
 
 TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "test_data.csv")
 
@@ -22,15 +23,34 @@ def test_end_to_end_crud(home_page, create_page, details_page, row):
         home_page.go_to_create_account()
 
         account_id = create_page.create_new_account(row)
-        # assert account_id is not None, "Failed to capture Account ID from alert"
-        # print(f"Created Account ID: {account_id}")
 
     # --- 2. Search & Verify Created Account ---
     with allure.step(f"Search & Verify Created Account"):
         home_page.navigate_to_home()  # Go back to search
         home_page.search_account(account_id)
 
-        details_page.get_account_details()
+        # A. Capture Actual State from UI
+        actual_data = details_page.get_account_details_as_dict()
+
+        # B. Build Expected State
+        expected_data = {
+            "account_id": account_id,
+            "account_holder_name": row["account_holder_name"],
+            "dob": row["dob"],
+            "gender": row["gender"],
+            "email": row["email"],
+            "phone": row["phone"],
+            "address": row["address"],
+            "zip_code": row["zip_code"],
+            "account_type": row["account_type"],
+            "balance": row["balance"],
+            "status": "Active",  # <--- Default status on creation is Active
+            "services": row["services"],
+            "marketing_opt_in": row["marketing_opt_in"].lower()
+        }
+
+        # C. Perform Standardized Assertion
+        assert_ui_match(actual_data, expected_data)
 
     # --- 3. Update Account ---
     with allure.step(f"Update Account"):
@@ -41,7 +61,28 @@ def test_end_to_end_crud(home_page, create_page, details_page, row):
         home_page.navigate_to_home()  # Go back to search
         home_page.search_account(account_id)
 
-        details_page.get_account_details()
+        # A. Capture Actual Updated State
+        actual_updated_data = details_page.get_account_details_as_dict()
+
+        # B. Build Expected Updated State
+        expected_updated_data = {
+            "account_id": account_id,
+            "account_holder_name": row["updated_account_holder_name"],
+            "dob": row["updated_dob"],
+            "gender": row["updated_gender"],
+            "email": row["updated_email"],
+            "phone": row["updated_phone"],
+            "address": row["updated_address"],
+            "zip_code": row["updated_zip_code"],
+            "account_type": row["updated_account_type"],
+            "balance": row["updated_balance"],
+            "status": row["updated_status"],
+            "services": row["updated_services"],
+            "marketing_opt_in": row["updated_marketing_opt_in"].lower()
+        }
+
+        # C. Perform Standardized Assertion
+        assert_ui_match(actual_updated_data, expected_updated_data)
 
     # --- 5. Delete Account ---
     with allure.step(f"Delete Account"):
