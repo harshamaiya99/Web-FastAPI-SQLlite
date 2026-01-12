@@ -11,5 +11,8 @@ requests
 allure-pytest
 pytest-playwright
 
+selenium
+webdriver-manager
+
 # Reporting
 allure-combine
