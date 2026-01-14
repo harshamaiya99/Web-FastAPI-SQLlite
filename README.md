@@ -70,53 +70,92 @@ Accompanying the API is a simple web-based user interface (frontend) built with 
 
 ```
 .
-├── src/
-│   ├── backend/
+web-FastAPI-SQLlite
+├── .github                                 # GitHub Actions CI/CD configuration folder
+│   ├── actions                             # Custom reusable composite actions
+│   │   ├── generate-report
+│   │   │   └── action.yml                  # Generates Allure report & history (CI step)
+│   │   ├── restore-history
+│   │   │   └── action.yml                  # Downloads previous report history for trend graphs
+│   │   ├── run-tests
+│   │   │   └── action.yml                  # Orchestrates running API, Playwright, and Selenium tests
+│   │   └── setup-env
+│   │       └── action.yml                  # Sets up Python, installs dependencies & browsers
+│   └── workflows
+│       └── main.yml                        # The main pipeline definition (triggers on push/pull_request)
+├── .gitignore                              # Files and folders to exclude from Git (e.g., __pycache__, .db)
+├── README.md                               # Project documentation and setup instructions
+├── conftest.py                             # Global Pytest hooks (e.g., generating reports after session)
+├── project_structure.txt                   # Text file containing this file tree
+├── pytest.ini                              # Pytest configuration (markers, CLI defaults, log levels)
+├── requirements.txt                        # Python dependencies (FastAPI, Pytest, Selenium, Playwright, etc.)
+├── src                                     # Source code for the Application Under Test (AUT)
+│   ├── __init__.py
+│   ├── backend                             # FastAPI backend logic
 │   │   ├── __init__.py
-│   │   ├── crud.py            # Database Create, Read, Update, Delete (CRUD) operations
-│   │   ├── database.py        # SQLite database connection and initialization
-│   │   ├── main.py            # FastAPI application entry point, CORS, router inclusion
-│   │   ├── models.py          # Pydantic models for API request/response
-│   │   └── routes.py          # API endpoints and HTML template rendering
-│   └── frontend/
-│       ├── accountDetails.html # HTML page for viewing/updating account details
-│       ├── createAccount.html  # HTML page for creating new accounts
-│       └── index.html          # Home page with search and create options
-├── tests/
-│   ├── api/
-│   │   ├── data/
-│   │   │   └── accounts.csv   # Test data for API CRUD operations
-│   │   ├── services/
-│   │   │   ├── accounts_api.py # API client for accounts endpoints
-│   │   │   └── base_api.py     # Base API client with common request logic and Allure logging
-│   │   ├── utils/
-│   │   │   ├── allure_logger.py # Utility for attaching request/response to Allure
-│   │   │   └── csv_reader.py    # Utility to read CSV test data
-│   │   └── test_accounts_api.py # Pytest tests for API CRUD operations
-│   ├── web/
-│   │   ├── data/
-│   │   │   ├── test_data.csv        # Test data for positive E2E UI flow
-│   │   │   └── test_data_negative.csv # Test data for negative UI scenarios
-│   │   ├── pages/                   # Playwright Page Object Model
-│   │   │   ├── __init__.py
-│   │   │   ├── base_page.py         # Base page class with common Playwright actions
-│   │   │   ├── create_page.py       # Page object for Create Account form
-│   │   │   ├── details_page.py      # Page object for Account Details page
-│   │   │   └── home_page.py         # Page object for Home page
-│   │   ├── utils/
-│   │   │   ├── __init__.py
-│   │   │   ├── alert_handler.py     # Utility to handle Playwright dialogs/alerts
-│   │   │   └── csv_reader.py        # Utility to read CSV test data for UI tests
-│   │   ├── conftest.py              # Playwright fixtures and page object initializations
-│   │   ├── test_e2e_flow.py         # Playwright end-to-end UI tests
-│   │   └── test_negative.py         # Playwright negative UI tests
-│   ├── conftest.py                  # Global pytest fixtures, including Allure report generation hook
-│   └── reports/                     # Directory for Allure test results and generated reports
-│       └── allure-results/          # Raw Allure test results
-│       └── allure-reports/          # Generated HTML Allure report
-├── .pytest_cache/                 # Pytest cache directory (should be ignored by Git)
-├── requirements.txt               # Project dependencies
-└── README.md                      # Project documentation
+│   │   ├── crud.py                         # CRUD functions for database interaction
+│   │   ├── database.db                     # SQLite database file (binary)
+│   │   ├── database.py                     # Database connection and session setup
+│   │   ├── main.py                         # Application entry point (uvicorn start)
+│   │   ├── models.py                       # SQLAlchemy database models and Pydantic schemas
+│   │   └── routes.py                       # API endpoint definitions (GET, POST, PUT, DELETE)
+│   └── frontend                            # Static HTML frontend files
+│       ├── accountDetails.html             # Page for viewing/updating account details
+│       ├── createAccount.html              # Page for creating a new bank account
+│       └── index.html                      # Landing page / Search dashboard
+└── tests                                   # The Test Automation Framework
+    ├── api                                 # API Testing Suite (Requests + Pytest)
+    │   ├── conftest.py                     # API-specific fixtures (client setup)
+    │   ├── data                            # Test Data
+    │   │   ├── accounts.csv                # Positive test scenarios data
+    │   │   └── accounts_negative.csv       # Negative test scenarios data
+    │   ├── services                        # Service Object Model (API Wrappers)
+    │   │   ├── accounts_api.py             # Wrapper methods for /accounts endpoints
+    │   │   └── base_api.py                 # Base wrapper for HTTP requests
+    │   ├── test_accounts_api.py            # Positive API tests
+    │   ├── test_accounts_api_negative.py   # Negative API tests (error codes)
+    │   └── utils                           # API Utilities
+    │       ├── allure_logger.py            # Helpers for detailed Allure logging
+    │       ├── csv_reader.py               # Utility to read CSV data
+    │       ├── expected_response.py        # Expected JSON schemas/responses
+    │       └── validators.py               # JSON schema validation logic
+    ├── reports                             # Directory where local test reports are stored
+    ├── web_playwright                      # UI Testing Suite (Playwright + Pytest)
+    │   ├── __init__.py
+    │   ├── conftest.py                     # Playwright fixtures (page injection, screenshots)
+    │   ├── data
+    │   │   ├── test_data.csv               # UI Positive test data
+    │   │   └── test_data_negative.csv      # UI Negative test data
+    │   ├── pages                           # Page Object Model (Playwright)
+    │   │   ├── __init__.py
+    │   │   ├── base_page.py                # Base wrapper for Playwright actions
+    │   │   ├── create_page.py              # Logic for Create Account page
+    │   │   ├── details_page.py             # Logic for Details/Update page
+    │   │   └── home_page.py                # Logic for Home/Search page
+    │   ├── test_e2e_flow.py                # Full CRUD End-to-End test (Playwright)
+    │   ├── test_negative.py                # Negative UI scenarios (Playwright)
+    │   └── utils
+    │       ├── __init__.py
+    │       ├── alert_handler.py            # Async listener for browser alerts
+    │       ├── assertion_logger.py         # "Expected vs Actual" custom loggers
+    │       └── csv_reader.py               # Reused CSV reader
+    └── web_selenium                        # UI Testing Suite (Selenium + Pytest)
+        ├── __init__.py
+        ├── conftest.py                     # Selenium fixtures (Driver setup, Headless config)
+        ├── data
+        │   └── test_data.csv               # Data reused/copied from web_playwright
+        ├── pages                           # Page Object Model (Selenium)
+        │   ├── __init__.py
+        │   ├── base_page.py                # Base wrapper (Explicit Waits, Find, Click)
+        │   ├── create_page.py              # Selenium implementation of Create Page
+        │   ├── details_page.py             # Selenium implementation of Details Page (JS Date fix)
+        │   └── home_page.py                # Selenium implementation of Home Page
+        ├── test_e2e_flow.py                # Full CRUD End-to-End test (Selenium version)
+        └── utils
+            ├── __init__.py
+            ├── alert_handler.py            # Synchronous alert handling logic
+            ├── assertion_logger.py         # Reused assertion logic
+            └── csv_reader.py               # Reused CSV reader
 ```
 
 ## Getting Started

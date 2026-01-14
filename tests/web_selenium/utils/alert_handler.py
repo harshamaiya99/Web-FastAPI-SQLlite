@@ -23,10 +23,3 @@ class AlertHandler:
         # 4. Accept
         alert.accept()
         return text
-
-    def accept_next(self):
-        """Prepares to accept the next alert (Selenium handles this dynamically)"""
-        # In Selenium, you often handle this *after* it appears, 
-        # but for API compatibility with your tests, we can define it.
-        # Actually, for Selenium, it's often better to just handle it explicitly when expected.
-        pass
