@@ -12,7 +12,6 @@ TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "test_data.csv"
 @allure.feature("End to End Banking Flow")
 @pytest.mark.parametrize("row", read_csv_data(TEST_DATA_FILE), ids=lambda r: r["account_holder_name"])
 def test_end_to_end_crud(home_page, create_page, details_page, row):
-    # ... The EXACT SAME test logic as tests/web_playwright/test_e2e_flow.py ...
     """
     Executes a full lifecycle test for each user in the CSV:
     Create -> Search -> Verify -> Update -> Search -> Verify -> Delete -> Search -> Confirm Not Found
@@ -106,7 +105,3 @@ def test_end_to_end_crud(home_page, create_page, details_page, row):
         assert_message_match(not_found_msg, "Not found", context="Deleted Account Search Alert")
 
     pass
-
-
-
-

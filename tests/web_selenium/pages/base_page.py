@@ -19,7 +19,7 @@ class BasePage:
         return self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
 
     def find_all(self, selector):
-        """Returns a LIST of WebElements (equivalent to Playwright .all())"""
+        """Returns a LIST of WebElements"""
         # We don't necessarily wait for visibility of ALL, just presence is usually enough for lists
         return self.driver.find_elements(By.CSS_SELECTOR, selector)
 
@@ -53,16 +53,13 @@ class BasePage:
         return self.find(selector).text
 
     def get_input_value(self, selector):
-        # Playwright: .input_value() -> Selenium: .get_attribute("value")
         return self.find(selector).get_attribute("value")
 
     def is_checked(self, selector):
-        # Playwright: .is_checked() -> Selenium: .is_selected()
         return self.find(selector).is_selected()
 
     def wait_for_url(self, partial_url):
-        # Playwright: self.page.wait_for_url("**/")
-        # Selenium: Explicit wait for URL contains
+        # Explicit wait for URL contains
         self.wait.until(EC.url_contains(partial_url))
 
     def set_value_js(self, selector, value):
@@ -74,7 +71,5 @@ class BasePage:
         self.driver.execute_script("arguments[0].value = arguments[1];", element, str(value))
 
     def get_validation_message(self, selector):
-        # Playwright: .evaluate("el => el.validationMessage")
-        # Selenium: .get_property("validationMessage")
         element = self.find(selector)
         return element.get_property("validationMessage")

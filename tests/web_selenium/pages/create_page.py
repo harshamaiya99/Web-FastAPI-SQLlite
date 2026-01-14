@@ -3,7 +3,6 @@ import re
 from tests.web_selenium.pages.base_page import BasePage # Changed Import
 
 class CreatePage(BasePage):
-    # Locators (Keep exactly the same as Playwright)
     NAME_INPUT = "#accountHolderName"
     DOB_INPUT = "#dob"
     GENDER_RADIO = "input[name='gender']"
@@ -18,22 +17,17 @@ class CreatePage(BasePage):
     TERMS_CHK = "#agreedToTerms"
     SUBMIT_BTN = "button[type='submit']"
 
-    # ... [Keep enter_name, enter_dob, etc. exactly the same] ...
-    # They use self.fill, self.click which map to BasePage
-
     @allure.step("Enter account holder name")
     def enter_name(self, name):
         self.fill(self.NAME_INPUT, name)
 
     @allure.step("Enter date of birth")
     def enter_dob(self, dob):
-        # Was: self.fill(self.DOB_INPUT, dob)
-        # Fix: Use JS to bypass date input mask
+        # Use JS to bypass date input mask
         self.set_value_js(self.DOB_INPUT, dob)
 
     @allure.step("Select gender")
     def select_gender(self, gender):
-        # Selenium CSS works fine with attribute selectors
         self.click(f"{self.GENDER_RADIO}[value='{gender}']")
 
     @allure.step("Enter email")
@@ -84,14 +78,11 @@ class CreatePage(BasePage):
         match = re.search(r"ID:\s*(\d+)", alert_text)
         if match:
             account_id = match.group(1)
-            # CHANGE: Playwright used self.page.wait_for_url("**/")
-            # Selenium uses our BasePage wrapper
             self.wait_for_url("") # or just wait for url changes
 
         return account_id, alert_text
 
     def create_new_account(self, data: dict) -> tuple[str, str]:
-        # [Keep this exactly the same]
         self.enter_name(data["account_holder_name"])
         self.enter_dob(data["dob"])
         self.select_gender(data["gender"])
@@ -107,7 +98,6 @@ class CreatePage(BasePage):
         return self.submit_form_and_capture_account_id()
 
     def get_validation_message_for_field(self, field_name: str) -> str:
-        # [Keep locator_map the same]
         locator_map = {
             "name": self.NAME_INPUT,
             "dob": self.DOB_INPUT,
@@ -120,5 +110,4 @@ class CreatePage(BasePage):
             "balance": self.BALANCE_INPUT,
             "terms": self.TERMS_CHK
         }
-        # CHANGE: Reuse the generic method from BasePage
         return self.get_validation_message(locator_map[field_name])
