@@ -2,6 +2,7 @@ import allure
 from selenium.webdriver.common.by import By
 from tests.web_selenium.pages.base_page import BasePage
 
+
 class LoginPage(BasePage):
     URL = "/login.html"
 
@@ -20,6 +21,11 @@ class LoginPage(BasePage):
         self.fill(self.USERNAME_INPUT, username)
         self.fill(self.PASSWORD_INPUT, password)
         self.click(self.LOGIN_BTN)
+
+        # Explicitly wait for the redirect to the root (Home Page)
+        # This prevents the test from trying to find Home Page elements
+        # while the browser is still on the Login Page.
+        self.wait_for_url("/")
 
     def get_error_message(self):
         return self.get_text(self.ERROR_MSG)
