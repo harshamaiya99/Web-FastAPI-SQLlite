@@ -6,7 +6,8 @@
 ![Pytest](https://img.shields.io/badge/Tests-Pytest-009688?style=flat-square&logo=pytest)
 ![Allure Report](https://img.shields.io/badge/Reporting-Allure-FF7700?style=flat-square&logo=allure)
 ![Playwright](https://img.shields.io/badge/UI_Testing-Playwright-2F80ED?style=flat-square&logo=playwright)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![Selenium](https://img.shields.io/badge/UI_Testing-Selenium-43B02A?style=flat-square&logo=selenium)
+![Karate](https://img.shields.io/badge/API_Testing-Karate-ED1C24?style=flat-square&logo=karate)
 
 ## Table of Contents
 
