@@ -1,7 +1,7 @@
 # Backend
 fastapi==0.100.0
 uvicorn[standard]
-pydantic
+pydantic<2.0.0
 Jinja2
 aiofiles
 
