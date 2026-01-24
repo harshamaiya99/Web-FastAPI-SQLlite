@@ -2,6 +2,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import TimeoutException
 
 class BasePage:
     def __init__(self, driver):
@@ -12,30 +13,12 @@ class BasePage:
         self.driver.get(url)
 
     def find(self, locator):
-        """
-        Locates a single element.
-        Args:
-            locator: A tuple like (By.ID, "someId") or (By.CSS_SELECTOR, ".class")
-        """
         return self.wait.until(EC.visibility_of_element_located(locator))
 
-    def wait_for_text(self, locator, text):
-        """
-        Waits until the element contains the specific text.
-        Essential for distinguishing between pages that share similar elements (like H1).
-        """
-        self.wait.until(EC.text_to_be_present_in_element(locator, text))
-
     def find_all(self, locator):
-        """
-        Locates all matching elements.
-        Args:
-            locator: A tuple like (By.CSS_SELECTOR, ".someClass")
-        """
         return self.driver.find_elements(*locator)
 
     def click(self, locator):
-        # Wait for element to be clickable before clicking
         element = self.wait.until(EC.element_to_be_clickable(locator))
         element.click()
 
@@ -50,13 +33,11 @@ class BasePage:
         select.select_by_visible_text(text)
 
     def check(self, locator):
-        """Ensures a checkbox/radio is checked"""
         element = self.find(locator)
         if not element.is_selected():
             element.click()
 
     def uncheck(self, locator):
-        """Ensures a checkbox is unchecked"""
         element = self.find(locator)
         if element.is_selected():
             element.click()
@@ -71,23 +52,18 @@ class BasePage:
         return self.find(locator).is_selected()
 
     def wait_for_url(self, partial_url):
+        """Waits until the URL contains the specific string."""
         self.wait.until(EC.url_contains(partial_url))
 
     def set_value_js(self, locator, value):
-        """
-        Sets value using JavaScript (Crucial for your date inputs).
-        """
         element = self.find(locator)
         self.driver.execute_script("arguments[0].value = arguments[1];", element, str(value))
 
     def get_alert_text(self):
-        """
-        Waits for alert, gets text, accepts it. Returns None if no alert.
-        """
         try:
             alert = self.wait.until(EC.alert_is_present())
             text = alert.text
             alert.accept()
             return text
-        except:
+        except TimeoutException:
             return None

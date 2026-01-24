@@ -5,8 +5,7 @@ from tests.web_selenium.pages.base_page import BasePage
 
 
 class CreatePage(BasePage):
-    # --- Locators (Tuples) ---
-    HEADER = (By.TAG_NAME, "h1")
+    # --- Locators ---
     NAME_INPUT = (By.ID, "accountHolderName")
     DOB_INPUT = (By.ID, "dob")
     EMAIL_INPUT = (By.ID, "email")
@@ -29,7 +28,6 @@ class CreatePage(BasePage):
 
     @allure.step("Select gender")
     def select_gender(self, gender):
-        # Dynamic Tuple construction
         locator = (By.CSS_SELECTOR, f"input[name='gender'][value='{gender}']")
         self.click(locator)
 
@@ -61,7 +59,6 @@ class CreatePage(BasePage):
     def select_services(self, services):
         if services:
             for service in services.split(","):
-                # Dynamic Tuple for checkboxes
                 locator = (By.CSS_SELECTOR, f"input[name='services'][value='{service.strip()}']")
                 self.check(locator)
 
@@ -91,9 +88,9 @@ class CreatePage(BasePage):
         return account_id, alert_text
 
     def create_new_account(self, data: dict) -> tuple[str, str]:
-        # --- SYNC FIX: Wait for specific text to ensure page transition ---
-        self.wait_for_text(self.HEADER, "Open New Bank Account")
-        # ------------------------------------
+        # We must wait for the URL to change to ensure we are on the new page.
+        self.wait_for_url("createAccount.html")
+        # ---------------------------------------
 
         self.enter_name(data["account_holder_name"])
         self.enter_dob(data["dob"])

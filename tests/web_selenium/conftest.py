@@ -14,8 +14,31 @@ def driver():
     """Setup Selenium WebDriver (Chrome)"""
     service = Service(ChromeDriverManager().install())
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless") # Uncomment for headless
+
+    # --- Disable Password Leaks & Manager ---
+    prefs = {
+        "credentials_enable_service": False,
+        "profile.password_manager_enabled": False,
+        "profile.password_manager_leak_detection": False,
+        # Disabling Safe Browsing is often required to stop the breach popup
+        "safebrowsing.enabled": False,
+    }
+    options.add_experimental_option("prefs", prefs)
+
+    # --- Arguments to suppress popups ---
+    # Guest mode natively disables password saving/checking features
+    options.add_argument("--guest")
+
+    options.add_argument("--disable-save-password-bubble")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--disable-notifications")
+
+    # Standard stability flags
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
+
+    options.add_argument("--headless") # Uncomment for headless
 
     driver = webdriver.Chrome(service=service, options=options)
     driver.maximize_window()
@@ -27,12 +50,14 @@ def driver():
 @pytest.fixture
 def login_page(driver, base_url):
     hp = LoginPage(driver)
-    hp.URL = base_url
+    hp.URL = f"{base_url}/login.html"
     return hp
+
 
 @pytest.fixture
 def home_page(driver):
     return HomePage(driver)
+
 
 @pytest.fixture
 def create_page(driver):
