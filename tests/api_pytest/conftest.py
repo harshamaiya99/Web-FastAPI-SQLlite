@@ -1,6 +1,6 @@
 import pytest
 import requests
-from tests.api.services.accounts_api import AccountsAPI
+from tests.api_pytest.services.accounts_api import AccountsAPI
 
 
 # =========================================================

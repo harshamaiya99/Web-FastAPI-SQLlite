@@ -1,4 +1,4 @@
-from tests.api.services.base_api import BaseAPI
+from tests.api_pytest.services.base_api import BaseAPI
 
 class AccountsAPI(BaseAPI):
 

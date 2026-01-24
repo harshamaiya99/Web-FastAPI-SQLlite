@@ -29,7 +29,6 @@
     *   [Generating Allure Report](#generating-allure-report)
     *   [Viewing Allure Report](#viewing-allure-report)
 *   [Contributing](#contributing)
-*   [License](#license)
 *   [Acknowledgements](#acknowledgements)
 
 ---
@@ -283,7 +282,7 @@ API tests are located in `tests/api/`. They use `pytest` and the `requests` libr
 To run API tests:
 
 ```bash
-pytest tests/api/ --alluredir=tests/reports/allure-results
+pytest tests/api_pytest/ --alluredir=tests/reports/allure-results
 ```
 
 ### Web UI Testing (Playwright)
@@ -332,10 +331,6 @@ Contributions are welcome! Please follow these steps:
 4.  Commit your changes (`git commit -m 'Add new feature'`).
 5.  Push to the branch (`git push origin feature/your-feature-name`).
 6.  Open a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the `LICENSE` file for details.
 
 ## Acknowledgements
 

@@ -1,4 +1,4 @@
-from tests.api.utils.validators import Any, Regex # Import Regex
+from tests.api_pytest.utils.validators import Any, Regex # Import Regex
 
 class ExpectedResponse:
 

@@ -1,10 +1,10 @@
 import os
 import pytest
 import allure
-from tests.api.utils.csv_reader import read_csv
-from tests.api.utils.expected_response import ExpectedResponse
+from tests.api_pytest.utils.csv_reader import read_csv
+from tests.api_pytest.utils.expected_response import ExpectedResponse
 
-from tests.api.utils.allure_logger import assert_json_match
+from tests.api_pytest.utils.allure_logger import assert_json_match
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "accounts.csv")
 
