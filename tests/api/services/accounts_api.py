@@ -2,10 +2,16 @@ from tests.api.services.base_api import BaseAPI
 
 class AccountsAPI(BaseAPI):
 
+    def __init__(self, base_url, token):
+        self.base_url = base_url
+        self.token = token
+
     def create_account(self, row):
+        url = f'{self.base_url}/accounts'
         headers = {
             "content-type": "application/json",
-            "accept": "application/json"
+            "accept": "application/json",
+            "Authorization": f"Bearer {self.token}"
         }
 
         create_payload = {
@@ -23,19 +29,24 @@ class AccountsAPI(BaseAPI):
             "marketing_opt_in": row["marketing_opt_in"].lower() == "true",
             "agreed_to_terms": True
         }
-        return self.post("/accounts", headers, create_payload)
+        return self.post(url, headers, create_payload)
 
     def get_account(self, account_id):
+        url = f'{self.base_url}/accounts/{account_id}'
         headers = {
             "content-type": "application/json",
-            "accept": "application/json"
+            "accept": "application/json",
+            "Authorization": f"Bearer {self.token}"
         }
-        return self.get(f"/accounts/{account_id}", headers)
+
+        return self.get(url, headers)
 
     def update_account(self, row, account_id):
+        url = f'{self.base_url}/accounts/{account_id}'
         headers = {
             "content-type": "application/json",
-            "accept": "application/json"
+            "accept": "application/json",
+            "Authorization": f"Bearer {self.token}"
         }
 
         update_payload = {
@@ -54,11 +65,13 @@ class AccountsAPI(BaseAPI):
             "agreed_to_terms": True
         }
 
-        return self.put(f"/accounts/{account_id}", headers, update_payload)
+        return self.put(url, headers, update_payload)
 
     def delete_account(self, account_id):
+        url = f'{self.base_url}/accounts/{account_id}'
         headers = {
             "content-type": "application/json",
-            "accept": "application/json"
+            "accept": "application/json",
+            "Authorization": f"Bearer {self.token}"
         }
-        return self.delete(f"/accounts/{account_id}", headers)
+        return self.delete(url, headers)
