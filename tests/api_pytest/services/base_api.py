@@ -1,5 +1,5 @@
 import requests
-from tests.api.utils.allure_logger import allure_attach
+from tests.api_pytest.utils.allure_logger import allure_attach
 
 class BaseAPI:
 

@@ -1,7 +1,7 @@
 import os
 import pytest
 import allure
-from tests.api.utils.csv_reader import read_csv
+from tests.api_pytest.utils.csv_reader import read_csv
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "accounts_negative.csv")
 test_data = read_csv(DATA_FILE)
@@ -24,7 +24,7 @@ def test_account_negative_scenarios(accounts_api_manager, row):
         with allure.step("Create account with missing fields (POST)"):
 
             # 1. Construct Payload Dynamically (Partial Data)
-            # We cannot use api.create_account() because it expects a full valid row.
+            # We cannot use api_pytest.create_account() because it expects a full valid row.
             # We must build the dict manually to intentionally omit fields.
             payload = {
                 "balance": float(row["balance"]),

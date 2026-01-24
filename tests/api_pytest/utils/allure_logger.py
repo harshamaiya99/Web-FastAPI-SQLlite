@@ -1,7 +1,7 @@
 import allure
 import json
 
-from tests.api.utils.validators import Validator
+from tests.api_pytest.utils.validators import Validator
 
 def allure_attach(method, url, response, headers=None, payload=None):
     allure.attach(
