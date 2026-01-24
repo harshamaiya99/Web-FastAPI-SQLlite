@@ -1,32 +1,37 @@
 import allure
+from selenium.webdriver.common.by import By
 from tests.web_selenium.pages.base_page import BasePage
 
 
 class DetailsPage(BasePage):
-    # --- Locators ---
-    ID_FIELD = "#accountId"
-    NAME_INPUT = "#accountHolderName"
-    DOB_INPUT = "#dob"
-    GENDER_RADIO = "input[name='gender']"
-    EMAIL_INPUT = "#email"
-    PHONE_INPUT = "#phone"
-    ADDRESS_INPUT = "#address"
-    ZIP_INPUT = "#zipCode"
-    TYPE_SELECT = "#accountType"
-    BALANCE_INPUT = "#balance"
-    STATUS_SELECT = "#status"
-    SERVICE_CHECKBOX = "input[name='services']"
-    MARKETING_CHK = "#marketingOptIn"
-    UPDATE_BTN = ".btn-update"
-    DELETE_BTN = ".btn-delete"
-    LOADING_MSG = "#loadingMessage"
-    ERROR_MSG = "#errorMessage"
+    # --- Locators (Tuples) ---
+    ID_FIELD = (By.ID, "accountId")
+    NAME_INPUT = (By.ID, "accountHolderName")
+    DOB_INPUT = (By.ID, "dob")
+
+    # Generic locators for groups
+    GENDER_CHECKED = (By.CSS_SELECTOR, "input[name='gender']:checked")
+    SERVICE_CHECKED = (By.CSS_SELECTOR, "input[name='services']:checked")
+    SERVICE_ALL = (By.CSS_SELECTOR, "input[name='services']")
+
+    EMAIL_INPUT = (By.ID, "email")
+    PHONE_INPUT = (By.ID, "phone")
+    ADDRESS_INPUT = (By.ID, "address")
+    ZIP_INPUT = (By.ID, "zipCode")
+    TYPE_SELECT = (By.ID, "accountType")
+    BALANCE_INPUT = (By.ID, "balance")
+    STATUS_SELECT = (By.ID, "status")
+    MARKETING_CHK = (By.ID, "marketingOptIn")
+
+    UPDATE_BTN = (By.CSS_SELECTOR, ".btn-update")
+    DELETE_BTN = (By.CSS_SELECTOR, ".btn-delete")
+    LOADING_MSG = (By.ID, "loadingMessage")
+    ERROR_MSG = (By.ID, "errorMessage")
 
     # --- Actions & Getters ---
 
     @allure.step("Wait for details to load")
     def wait_for_details_to_load(self):
-        # 'find' automatically waits for visibility based on BasePage logic
         self.find(self.ID_FIELD)
 
     @allure.step("Get account_id")
@@ -67,14 +72,12 @@ class DetailsPage(BasePage):
 
     @allure.step("Get marketing_opt_in")
     def get_marketing_opt_in(self):
-        # Uses BasePage's is_checked() wrapper
-        is_marketing_checked = self.is_checked(self.MARKETING_CHK)
-        return "true" if is_marketing_checked else "false"
+        is_checked = self.is_checked(self.MARKETING_CHK)
+        return "true" if is_checked else "false"
 
     @allure.step("Get gender")
     def get_gender(self):
-        # CSS selector :checked works in Selenium to find the selected radio
-        return self.find(f"{self.GENDER_RADIO}:checked").get_attribute("value")
+        return self.find(self.GENDER_CHECKED).get_attribute("value")
 
     @allure.step("Get status")
     def get_status(self):
@@ -82,11 +85,8 @@ class DetailsPage(BasePage):
 
     @allure.step("Get services")
     def get_services(self):
-        # 1. Find all checked service checkboxes
-        checked_elements = self.find_all(f"{self.SERVICE_CHECKBOX}:checked")
-        # 2. Extract value attributes
+        checked_elements = self.find_all(self.SERVICE_CHECKED)
         values = [el.get_attribute("value") for el in checked_elements]
-        # 3. Join with commas to match CSV format
         return ",".join(values)
 
     # --- Update Methods ---
@@ -97,7 +97,6 @@ class DetailsPage(BasePage):
 
     @allure.step("Update dob")
     def update_dob(self, updated_dob):
-        # *** FIX: Use JS to bypass date input mask issues in Selenium ***
         self.set_value_js(self.DOB_INPUT, updated_dob)
 
     @allure.step("Update email")
@@ -126,7 +125,8 @@ class DetailsPage(BasePage):
 
     @allure.step("Update gender")
     def update_gender(self, updated_gender):
-        self.click(f"{self.GENDER_RADIO}[value='{updated_gender}']")
+        locator = (By.CSS_SELECTOR, f"input[name='gender'][value='{updated_gender}']")
+        self.click(locator)
 
     @allure.step("Update status")
     def update_status(self, updated_status):
@@ -134,17 +134,17 @@ class DetailsPage(BasePage):
 
     @allure.step("Update services")
     def update_services(self, services):
-        # 1. Uncheck all currently selected services
-        all_checkboxes = self.find_all(self.SERVICE_CHECKBOX)
+        # 1. Uncheck all
+        all_checkboxes = self.find_all(self.SERVICE_ALL)
         for checkbox in all_checkboxes:
             if checkbox.is_selected():
                 checkbox.click()
 
-        # 2. Check only the services provided
+        # 2. Check provided
         if services:
             for service in services.split(","):
-                # Use standard check method for specific value
-                self.check(f"{self.SERVICE_CHECKBOX}[value='{service.strip()}']")
+                locator = (By.CSS_SELECTOR, f"input[name='services'][value='{service.strip()}']")
+                self.check(locator)
 
     @allure.step("Update marketing opt-in")
     def update_marketing_opt_in(self, opt_in):
@@ -155,28 +155,22 @@ class DetailsPage(BasePage):
 
     @allure.step("Click on Update button")
     def update_account(self) -> str:
-        # Define the trigger (clicking the button)
-        trigger = lambda: self.click(self.UPDATE_BTN)
-
-        # Capture the alert text, accept it, and return the text
-        alert_text = self.alert.get_text_and_accept(trigger)
-
-        # Wait for the redirect to index page
-        self.wait_for_url("")
-
+        self.click(self.UPDATE_BTN)
+        alert_text = self.get_alert_text() or ""
+        self.wait_for_url("/")
         return alert_text
 
     @allure.step("Click on Delete account button")
     def delete_account(self):
-        # Click delete
         self.click(self.DELETE_BTN)
 
-        # Handle the confirmation alert (Sync logic for Selenium)
-        # We use a lambda: None because the click already happened
-        self.alert.get_text_and_accept(lambda: None)
+        # Confirm delete
+        self.get_alert_text()
 
-        # Wait for redirect
-        self.wait_for_url("")
+        # Success message
+        self.get_alert_text()
+
+        self.wait_for_url("/")
 
     # --- Aggregated Logic ---
 
@@ -193,14 +187,10 @@ class DetailsPage(BasePage):
         self.update_status(data["updated_status"])
         self.update_services(data["updated_services"])
         self.update_marketing_opt_in(data["updated_marketing_opt_in"])
-        return self.update_account()  # Return the success message
+        return self.update_account()
 
     def get_account_details_as_dict(self) -> dict:
-        """
-        Scrapes all relevant fields from the Details page and returns them as a dictionary.
-        """
         self.wait_for_details_to_load()
-
         return {
             "account_id": self.get_account_id(),
             "account_holder_name": self.get_name(),
