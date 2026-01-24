@@ -6,6 +6,7 @@ from playwright.sync_api import Page
 from tests.web_playwright.pages.home_page import HomePage
 from tests.web_playwright.pages.create_page import CreatePage
 from tests.web_playwright.pages.details_page import DetailsPage
+from tests.web_playwright.pages.login_page import LoginPage
 
 
 # =========================================================
@@ -26,6 +27,10 @@ def browser_context_args(browser_context_args, base_url):
 # =========================================================
 # UI Page Object Fixtures (POM)
 # =========================================================
+@pytest.fixture
+def login_page(page: Page):
+    return LoginPage(page)
+
 
 @pytest.fixture
 def home_page(page: Page):

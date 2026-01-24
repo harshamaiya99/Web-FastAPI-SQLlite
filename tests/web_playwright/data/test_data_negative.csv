@@ -1,7 +1,7 @@
 test_context,tc_name,account_id,account_holder_name,dob,gender,email,phone,address,zip_code,account_type,balance,services,marketing_opt_in,agreed_to_terms,field_name,expected_message
 home_search,invalid_chars_id,abc1234,,,,,,,,,,,,,search_input,Please enter a valid 7-digit account ID
 home_search,invalid_length_id,12345,,,,,,,,,,,,,search_input,Please enter a valid 7-digit account ID
-detail_search,non_existent_id,9999999,,,,,,,,,,,,,alert,Not found
+home_search,non_existent_id,9999999,,,,,,,,,,,,,alert,Account not found.
 create_validation,missing_mandatory_name,,,2000-01-01,Male,john@test.com,1234567890,123 St,00000,Savings,100,,False,True,name,Please fill out this field.
 create_validation,missing_mandatory_dob,,John Doe,,Male,john@test.com,1234567890,123 St,00000,Savings,100,,False,True,dob,Please fill out this field.
 create_validation,missing_gender,,John Doe,2000-01-01,,john@test.com,1234567890,123 St,00000,Savings,100,,False,True,gender,Please select one of these options.
