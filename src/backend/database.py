@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "database.db")
 
-# Setup hashing for seeding
+# Setup hashing for seeding (creating default users)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -19,7 +19,7 @@ def init_db():
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Existing accounts table
+    # --- 1. Accounts Table ---
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS accounts (
         account_id TEXT PRIMARY KEY,
@@ -40,7 +40,7 @@ def init_db():
     )
     """)
 
-    # NEW: Users table
+    # --- 2. Users Table ---
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         username TEXT PRIMARY KEY,
@@ -49,9 +49,7 @@ def init_db():
     )
     """)
 
-    # Seed Default Users (if not exist)
-    # Clerk: clerk / clerk123
-    # Manager: manager / manager123
+    # --- 3. Seed Default Users ---
     clerk_pw = pwd_context.hash("clerk123")
     manager_pw = pwd_context.hash("manager123")
 
@@ -62,7 +60,7 @@ def init_db():
 
     conn.commit()
     conn.close()
-    print("Database initialized successfully with Users table.")
+    print("Database initialized successfully.")
 
 
 if __name__ == "__main__":
