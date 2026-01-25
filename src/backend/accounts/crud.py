@@ -2,24 +2,8 @@ import random
 from datetime import date
 from typing import Optional, Dict, List
 from database import get_connection
-from models import AccountCreate, AccountUpdate, UserInDB
+from accounts.schemas import AccountCreate, AccountUpdate
 
-
-# --- User CRUD ---
-def get_user_by_username(username: str) -> Optional[UserInDB]:
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE username=?", (username,))
-    row = cursor.fetchone()
-    conn.close()
-
-    if row:
-        # Convert row to dict, then to Pydantic model
-        return UserInDB(**dict(row))
-    return None
-
-
-# --- Account CRUD ---
 def generate_account_id() -> str:
     conn = get_connection()
     cursor = conn.cursor()
@@ -29,7 +13,6 @@ def generate_account_id() -> str:
         if cursor.fetchone() is None:
             conn.close()
             return account_id
-
 
 def create_account(account: AccountCreate) -> Dict:
     conn = get_connection()
@@ -60,7 +43,6 @@ def create_account(account: AccountCreate) -> Dict:
         "message": "Account created successfully"
     }
 
-
 def get_all_accounts() -> List[Dict]:
     conn = get_connection()
     cursor = conn.cursor()
@@ -69,7 +51,6 @@ def get_all_accounts() -> List[Dict]:
     conn.close()
     return [dict(row) for row in rows]
 
-
 def get_account_by_id(account_id: str) -> Optional[Dict]:
     conn = get_connection()
     cursor = conn.cursor()
@@ -77,7 +58,6 @@ def get_account_by_id(account_id: str) -> Optional[Dict]:
     row = cursor.fetchone()
     conn.close()
     return dict(row) if row else None
-
 
 def update_account(account_id: str, account: AccountUpdate) -> bool:
     conn = get_connection()
@@ -100,7 +80,6 @@ def update_account(account_id: str, account: AccountUpdate) -> bool:
     rows_affected = cursor.rowcount
     conn.close()
     return rows_affected > 0
-
 
 def delete_account(account_id: str) -> bool:
     conn = get_connection()
