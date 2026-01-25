@@ -83,7 +83,7 @@ class CreatePage(BasePage):
         if match:
             account_id = match.group(1)
             # Only wait for network idle if we actually submitted successfully
-            self.page.wait_for_url("**/")
+            self.page.wait_for_url("**/home_page.html")
 
         # Return BOTH the ID and the raw text
         return account_id, alert_text

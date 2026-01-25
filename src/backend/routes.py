@@ -30,7 +30,7 @@ def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@html_router.get("/", response_class=HTMLResponse)
+@html_router.get("/home_page.html", response_class=HTMLResponse)
 def home(request: Request):
     """
     Serves the Home/Dashboard Page.
