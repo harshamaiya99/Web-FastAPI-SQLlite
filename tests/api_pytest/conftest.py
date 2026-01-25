@@ -1,7 +1,12 @@
+import os
 import pytest
 import requests
 from tests.api_pytest.services.accounts_api import AccountsAPI
 
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # =========================================================
 # Auth Helpers
@@ -36,7 +41,11 @@ def clerk_token(base_url):
     Logs in as Clerk and returns the raw token string.
     Consumes 'base_url' from root conftest.
     """
-    return get_auth_token(base_url, "clerk", "clerk123")
+    # Fetch Credentials from .env
+    clerk_user = os.getenv("CLERK_USERNAME")
+    clerk_pass = os.getenv("CLERK_PASSWORD")
+
+    return get_auth_token(base_url, clerk_user, clerk_pass)
 
 
 @pytest.fixture(scope="session")
@@ -45,7 +54,11 @@ def manager_token(base_url):
     Logs in as Manager and returns the raw token string.
     Consumes 'base_url' from root conftest.
     """
-    return get_auth_token(base_url, "manager", "manager123")
+    # Fetch Credentials from .env
+    manager_user = os.getenv("MANAGER_USERNAME")
+    manager_pass = os.getenv("MANAGER_PASSWORD")
+
+    return get_auth_token(base_url, manager_user, manager_pass)
 
 
 # =========================================================

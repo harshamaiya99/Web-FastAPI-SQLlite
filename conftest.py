@@ -3,10 +3,12 @@ import shutil
 import subprocess
 import pytest
 
-# Base URL of the application (UI + API)
+from dotenv import load_dotenv
 
-# Read from env variable, default to localhost for local testing
-BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:9000")
+# Load environment variables
+load_dotenv()
+
+BASE_URL = os.getenv("BASE_URL")
 
 
 @pytest.fixture(scope="session")

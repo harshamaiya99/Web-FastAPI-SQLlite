@@ -5,6 +5,11 @@ from playwright.sync_api import expect
 from tests.web_playwright.utils.csv_reader import read_csv_data
 from tests.web_playwright.utils.assertion_logger import assert_ui_match, assert_message_match, assert_message_contains
 
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "test_data.csv")
 
 @allure.epic("Web UI Test - Playwright")
@@ -18,7 +23,10 @@ def test_end_to_end_crud(login_page, home_page, create_page, details_page, row):
     # --- 1. Navigate & Create ---
     with allure.step(f"Login Page"):
         login_page.navigate_to_login()
-        login_page.login("manager", "manager123")
+
+        manager_user = os.getenv("MANAGER_USERNAME")
+        manager_pass = os.getenv("MANAGER_PASSWORD")
+        login_page.login(manager_user, manager_pass)
 
 
     with allure.step(f"Create Account"):
