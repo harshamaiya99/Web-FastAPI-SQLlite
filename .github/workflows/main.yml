@@ -15,6 +15,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      BASE_URL: http://127.0.0.1:9000
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      CLERK_USERNAME: ${{ secrets.CLERK_USERNAME }}
+      CLERK_PASSWORD: ${{ secrets.CLERK_PASSWORD }}
+      MANAGER_USERNAME: ${{ secrets.MANAGER_USERNAME }}
+      MANAGER_PASSWORD: ${{ secrets.MANAGER_PASSWORD }}
+
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4

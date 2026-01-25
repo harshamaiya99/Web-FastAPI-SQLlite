@@ -1,6 +1,10 @@
 import sqlite3
 import os
 from passlib.context import CryptContext
+from dotenv import load_dotenv
+
+# Load environment variables from .env file (looks in root or current dir)
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "database.db")
@@ -50,13 +54,23 @@ def init_db():
     """)
 
     # --- 3. Seed Default Users ---
-    clerk_pw = pwd_context.hash("clerk123")
-    manager_pw = pwd_context.hash("manager123")
+    # Fetch Credentials from .env
+    clerk_user = os.getenv("CLERK_USERNAME")
+    clerk_pass = os.getenv("CLERK_PASSWORD")
+
+    manager_user = os.getenv("MANAGER_USERNAME")
+    manager_pass = os.getenv("MANAGER_PASSWORD")
+
+    # Hash passwords
+    clerk_hash = pwd_context.hash(clerk_pass)
+    manager_hash = pwd_context.hash(manager_pass)
+
+    # Insert Users
+    cursor.execute("INSERT OR IGNORE INTO users (username, hashed_password, role) VALUES (?, ?, ?)",
+                   (clerk_user, clerk_hash, "clerk"))
 
     cursor.execute("INSERT OR IGNORE INTO users (username, hashed_password, role) VALUES (?, ?, ?)",
-                   ("clerk", clerk_pw, "clerk"))
-    cursor.execute("INSERT OR IGNORE INTO users (username, hashed_password, role) VALUES (?, ?, ?)",
-                   ("manager", manager_pw, "manager"))
+                   (manager_user, manager_hash, "manager"))
 
     conn.commit()
     conn.close()

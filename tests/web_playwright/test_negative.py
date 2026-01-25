@@ -3,6 +3,11 @@ import allure
 import os
 from tests.web_playwright.utils.csv_reader import read_csv_data
 
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "test_data_negative.csv")
 
 
@@ -17,11 +22,14 @@ def test_negative_scenarios(login_page, home_page, create_page, details_page, ro
     3. create_account: Backend/Form validation (Form submission Alert).
     """
 
+    manager_user = os.getenv("MANAGER_USERNAME")
+    manager_pass = os.getenv("MANAGER_PASSWORD")
+
     # --- Context 1: Home Page Search Validation ---
     if row["test_context"] == "home_search":
         with allure.step(f"Login Page"):
             login_page.navigate_to_login()
-            login_page.login("manager", "manager123")
+            login_page.login(manager_user, manager_pass)
 
         with allure.step(f"Testing Home Search Validation: {row['tc_name']}"):
             home_page.search_account(row["account_id"])
@@ -31,7 +39,7 @@ def test_negative_scenarios(login_page, home_page, create_page, details_page, ro
     elif row["test_context"] == "create_validation":
         with allure.step(f"Login Page"):
             login_page.navigate_to_login()
-            login_page.login("manager", "manager123")
+            login_page.login(manager_user, manager_pass)
 
         with allure.step(f"Testing Create Account Validation: {row['tc_name']}"):
 

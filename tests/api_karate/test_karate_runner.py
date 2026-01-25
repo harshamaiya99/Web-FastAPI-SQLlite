@@ -2,6 +2,11 @@ import subprocess
 import os
 import allure
 
+from dotenv import load_dotenv  # <--- Import this
+
+# Load the .env file into os.environ so Maven can see it
+load_dotenv()
+
 @allure.epic("API Test - Karate")
 @allure.feature("End-to-End test flow")
 def test_execute_karate_tests():
