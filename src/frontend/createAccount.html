@@ -168,7 +168,7 @@
                 if (response && response.ok) {
                     const result = await response.json();
                     alert(`Account Created! ID: ${result.account_id}`);
-                    window.location.href = "/";
+                    window.location.href = "/home_page.html";
                 } else if (response) {
                     alert("Failed to create account.");
                 }

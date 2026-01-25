@@ -158,7 +158,7 @@ class DetailsPage(BasePage):
         alert_text = self.alert.get_text_and_accept(trigger)
 
         # Wait for the redirect/reload to complete (as discussed previously)
-        self.page.wait_for_url("**/")
+        self.page.wait_for_url("**/home_page.html")
 
         return alert_text
 
@@ -167,7 +167,7 @@ class DetailsPage(BasePage):
         # Prepare to accept the "Delete this account?" confirmation
         self.alert.accept_next()
         self.click(self.DELETE_BTN)
-        self.page.wait_for_url("**/")
+        self.page.wait_for_url("**/home_page.html")
 
     def update_account_details(self, data: dict) -> str:
         self.update_name(data["updated_account_holder_name"])

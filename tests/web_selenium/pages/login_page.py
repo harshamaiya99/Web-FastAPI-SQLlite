@@ -25,7 +25,7 @@ class LoginPage(BasePage):
         # Explicitly wait for the redirect to the root (Home Page)
         # This prevents the test from trying to find Home Page elements
         # while the browser is still on the Login Page.
-        self.wait_for_url("/")
+        self.wait_for_url("/home_page.html")
 
     def get_error_message(self):
         return self.get_text(self.ERROR_MSG)

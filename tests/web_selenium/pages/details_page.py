@@ -157,7 +157,7 @@ class DetailsPage(BasePage):
     def update_account(self) -> str:
         self.click(self.UPDATE_BTN)
         alert_text = self.get_alert_text() or ""
-        self.wait_for_url("/")
+        self.wait_for_url("/home_page.html")
         return alert_text
 
     @allure.step("Click on Delete account button")
@@ -170,7 +170,7 @@ class DetailsPage(BasePage):
         # Success message
         self.get_alert_text()
 
-        self.wait_for_url("/")
+        self.wait_for_url("/home_page.html")
 
     # --- Aggregated Logic ---
 

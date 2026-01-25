@@ -83,7 +83,7 @@ class CreatePage(BasePage):
             account_id = match.group(1)
 
         # Wait for redirect to home (root path)
-        self.wait_for_url("/")
+        self.wait_for_url("/home_page.html")
 
         return account_id, alert_text
 

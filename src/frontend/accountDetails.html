@@ -148,7 +148,7 @@
 
             if(!res || !res.ok) {
                 if (res && res.status === 404) alert("Account Not found");
-                window.location.href="/";
+                window.location.href="/home_page.html";
                 return;
             }
             const data = await res.json();
@@ -209,7 +209,7 @@
 
             if (res && res.ok) {
                 alert("Account details updated successfully!");
-                window.location.href="/";
+                window.location.href="/home_page.html";
             }
         }
 
@@ -218,7 +218,7 @@
                 const res = await authFetch(`${API}/accounts/${id}`, { method: "DELETE" });
                 if (res && res.ok) {
                     alert("Account Deleted.");
-                    window.location.href="/";
+                    window.location.href="/home_page.html";
                 }
             }
         }

@@ -9,8 +9,8 @@ from routes import api_router, html_router
 import database
 
 app = FastAPI(
-    title="Bank Account Management System",
-    description="Application for managing bank accounts",
+    title="Bank Management System",
+    description="Application for Managing Bank accounts & Advanced QA Automation Framework",
     version="1.0.0"
 )
 

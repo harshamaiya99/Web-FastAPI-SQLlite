@@ -18,8 +18,8 @@ runs:
       if: always()
       shell: bash
       run: |
-        echo "Project=FastAPI Backend" >> allure-results/environment.properties
-        echo "Environment=Staging (Localhost)" >> allure-results/environment.properties
+        echo "Project=Bank Management System" >> allure-results/environment.properties
+        echo "Environment=Staging (localhost)" >> allure-results/environment.properties
         echo "Executor=GitHub Actions" >> allure-results/environment.properties
         
         echo '{
