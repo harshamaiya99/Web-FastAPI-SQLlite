@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Bank Account Management</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
     <div class="container">
@@ -51,6 +51,11 @@
 
     <script>
         const BASE_URL = "{{ base_url }}";
+    </script>
+
+    <script src="/static/js/api.js"></script>
+
+    <script>
         const token = localStorage.getItem("token");
         const user = localStorage.getItem("user");
 
@@ -58,31 +63,6 @@
             window.location.href = "/login.html";
         }
         document.getElementById("userDisplay").textContent = user || "Staff";
-
-        async function authFetch(url, options = {}) {
-            const headers = {
-                ...options.headers,
-                "Authorization": `Bearer ${token}`
-            };
-
-            const response = await fetch(url, { ...options, headers });
-
-            if (response.status === 401) {
-                alert("Session expired. Please login again.");
-                logout();
-                return null;
-            }
-            if (response.status === 403) {
-                alert("Permission Denied.");
-                return null;
-            }
-            return response;
-        }
-
-        function logout() {
-            localStorage.clear();
-            window.location.href = "/login.html";
-        }
 
         async function searchAccount() {
             const accountId = document.getElementById("accountId").value.trim();
@@ -95,6 +75,7 @@
                 return;
             }
 
+            // authFetch is now provided by api.js
             const res = await authFetch(`${BASE_URL}/accounts/${accountId}`);
 
             if (res && res.ok) {
