@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <title>Create New Account</title>
     <link rel="stylesheet" href="/static/styles.css">
-    </style>
 </head>
 <body>
     <div class="container">
-        <h1 style="text-align: center; color: var(--primary-color);">Open New Bank Account</h1>
+        <div class="app-title-container">
+            <h1 class="app-title" onclick="window.location.href='/home_page.html'">Bank Management System</h1>
+            <button class="btn-cancel" onclick="logout()" style="padding: 8px 15px; font-size: 14px;">Logout</button>
+        </div>
+        <h2 style="color: var(--primary-color);">Open New Bank Account</h2>
 
         <form id="createAccountForm">
             <div class="form-section">
@@ -177,6 +180,11 @@
                 alert("Error submitting form.");
             }
         });
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "/login.html";
+        }
     </script>
 </body>
 </html>

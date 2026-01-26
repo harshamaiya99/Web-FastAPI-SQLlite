@@ -8,7 +8,11 @@
 </head>
 <body>
     <div class="container">
-        <h1 style="text-align: center; color: var(--primary-color);">Manage Account</h1>
+        <div class="app-title-container">
+            <h1 class="app-title" onclick="window.location.href='/home_page.html'">Bank Management System</h1>
+            <button class="btn-cancel" onclick="logout()" style="padding: 8px 15px; font-size: 14px;">Logout</button>
+        </div>
+        <h2 style="color: var(--primary-color);">Manage Account</h2>
         <div id="loading" style="text-align: center;">Loading...</div>
 
         <form id="accountForm" style="display: none;">
@@ -221,6 +225,11 @@
                     window.location.href="/home_page.html";
                 }
             }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "/login.html";
         }
 
         loadData();
