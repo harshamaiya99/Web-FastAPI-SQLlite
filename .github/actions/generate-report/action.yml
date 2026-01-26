@@ -29,8 +29,7 @@ runs:
           "buildOrder": ${{ inputs.github_run_number }},
           "buildName": "Run #${{ inputs.github_run_number }}",
           "buildUrl": "https://github.com/${{ inputs.github_repository }}/actions/runs/${{ inputs.github_run_id }}",
-          "reportName": "Allure Report",
-          "reportUrl": "https://${{ inputs.github_repository_owner }}.github.io/${{ inputs.github_repo_name }}/"
+          "reportName": "Allure Report"
         }' > allure-results/executor.json
 
     - name: Generate Allure Report
