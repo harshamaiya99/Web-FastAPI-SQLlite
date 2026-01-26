@@ -1,11 +1,8 @@
 import random
-import json
-import sqlite3
 from datetime import date
 from typing import Optional, Dict, List
 from database import get_connection
 from accounts.schemas import AccountCreate, AccountUpdate
-
 
 def generate_account_id() -> str:
     conn = get_connection()
@@ -16,7 +13,6 @@ def generate_account_id() -> str:
         if cursor.fetchone() is None:
             conn.close()
             return account_id
-
 
 def create_account(account: AccountCreate) -> Dict:
     conn = get_connection()
@@ -47,7 +43,6 @@ def create_account(account: AccountCreate) -> Dict:
         "message": "Account created successfully"
     }
 
-
 def get_all_accounts() -> List[Dict]:
     conn = get_connection()
     cursor = conn.cursor()
@@ -56,7 +51,6 @@ def get_all_accounts() -> List[Dict]:
     conn.close()
     return [dict(row) for row in rows]
 
-
 def get_account_by_id(account_id: str) -> Optional[Dict]:
     conn = get_connection()
     cursor = conn.cursor()
@@ -64,7 +58,6 @@ def get_account_by_id(account_id: str) -> Optional[Dict]:
     row = cursor.fetchone()
     conn.close()
     return dict(row) if row else None
-
 
 def update_account(account_id: str, account: AccountUpdate) -> bool:
     conn = get_connection()
@@ -88,7 +81,6 @@ def update_account(account_id: str, account: AccountUpdate) -> bool:
     conn.close()
     return rows_affected > 0
 
-
 def delete_account(account_id: str) -> bool:
     conn = get_connection()
     cursor = conn.cursor()
@@ -97,36 +89,3 @@ def delete_account(account_id: str) -> bool:
     rows_affected = cursor.rowcount
     conn.close()
     return rows_affected > 0
-
-
-# --- Idempotency Helpers ---
-
-def get_idempotency_key(key: str) -> Optional[Dict]:
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT response_json FROM idempotency_keys WHERE key=?", (key,))
-    row = cursor.fetchone()
-    conn.close()
-
-    if row:
-        return json.loads(row["response_json"])
-    return None
-
-
-def save_idempotency_key(key: str, response_data: Dict) -> None:
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    response_json = json.dumps(response_data)
-
-    try:
-        cursor.execute(
-            "INSERT INTO idempotency_keys (key, response_json) VALUES (?, ?)",
-            (key, response_json)
-        )
-        conn.commit()
-    except sqlite3.IntegrityError:
-        # Ignore if key already exists to prevent crashes on race conditions
-        pass
-    finally:
-        conn.close()

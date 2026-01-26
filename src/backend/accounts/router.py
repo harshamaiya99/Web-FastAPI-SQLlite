@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Header
 from typing import List
 
+# Import from the new generic module
+import idempotency
 from accounts import crud
 from accounts.schemas import AccountCreate, AccountUpdate, AccountResponse
 from auth import utils
@@ -24,18 +26,18 @@ def create_account(
 ):
     """
     Auth: Clerk, Manager
-    Requires 'Idempotency-Id' header to prevent duplicate creations.
+    Requires 'Idempotency-Id' header.
     """
-    # 1. Check if this key has already been processed
-    cached_response = crud.get_idempotency_key(idempotency_id)
+    # 1. Generic Check (Reusable)
+    cached_response = idempotency.get_idempotency_key(idempotency_id)
     if cached_response:
         return cached_response
 
-    # 2. Process the request (Create Account)
+    # 2. Specific Business Logic (Create Account)
     result = crud.create_account(account)
 
-    # 3. Save the response for future retries
-    crud.save_idempotency_key(idempotency_id, result)
+    # 3. Generic Save (Reusable)
+    idempotency.save_idempotency_key(idempotency_id, result)
 
     return result
 
