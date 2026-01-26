@@ -53,7 +53,16 @@ def init_db():
     )
     """)
 
-    # --- 3. Seed Default Users ---
+    # --- 3. Idempotency Keys Table (NEW) ---
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS idempotency_keys (
+        key TEXT PRIMARY KEY,
+        response_json TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    # --- 4. Seed Default Users ---
     # Fetch Credentials from .env
     clerk_user = os.getenv("CLERK_USERNAME")
     clerk_pass = os.getenv("CLERK_PASSWORD")

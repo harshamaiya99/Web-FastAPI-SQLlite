@@ -1,4 +1,6 @@
 import os
+import uuid
+
 import pytest
 import allure
 from tests.api_pytest.utils.csv_reader import read_csv
@@ -59,7 +61,8 @@ def test_account_negative_scenarios(accounts_api_manager, row):
             headers = {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "Authorization": f"Bearer {api.token}"
+                "Authorization": f"Bearer {api.token}",
+                "Idempotency-Id": str(uuid.uuid4())
             }
 
             # 3. Send Request using BaseAPI.post (Handles Allure logging automatically)

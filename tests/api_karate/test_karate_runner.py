@@ -2,7 +2,7 @@ import subprocess
 import os
 import allure
 
-from dotenv import load_dotenv  # <--- Import this
+from dotenv import load_dotenv
 
 # Load the .env file into os.environ so Maven can see it
 load_dotenv()

@@ -18,6 +18,8 @@ Feature: End-to-End Account Lifecycle
     # STEP 1: CREATE ACCOUNT
     # =======================================================================
     Given path 'accounts'
+    And header Idempotency-Id = java.util.UUID.randomUUID().toString()
+
     And request
     """
     {

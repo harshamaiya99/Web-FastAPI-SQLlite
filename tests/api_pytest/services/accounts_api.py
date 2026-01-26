@@ -1,3 +1,4 @@
+import uuid
 from tests.api_pytest.services.base_api import BaseAPI
 
 class AccountsAPI(BaseAPI):
@@ -11,7 +12,8 @@ class AccountsAPI(BaseAPI):
         headers = {
             "content-type": "application/json",
             "accept": "application/json",
-            "Authorization": f"Bearer {self.token}"
+            "Authorization": f"Bearer {self.token}",
+            "Idempotency-Id": str(uuid.uuid4())
         }
 
         create_payload = {
