@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, Header
 from typing import List
 
 from accounts import crud
@@ -8,17 +8,37 @@ from auth.schemas import User
 
 router = APIRouter(prefix="/accounts", tags=["accounts"])
 
+
 @router.get("", response_model=List[AccountResponse])
 def get_all_accounts(current_user: User = Depends(utils.get_current_user)):
     """Auth: Clerk, Manager"""
     accounts = crud.get_all_accounts()
     return accounts
 
+
 @router.post("", status_code=200)
-def create_account(account: AccountCreate, current_user: User = Depends(utils.get_current_user)):
-    """Auth: Clerk, Manager"""
+def create_account(
+        account: AccountCreate,
+        idempotency_id: str = Header(..., alias="Idempotency-Id"),
+        current_user: User = Depends(utils.get_current_user)
+):
+    """
+    Auth: Clerk, Manager
+    Requires 'Idempotency-Id' header to prevent duplicate creations.
+    """
+    # 1. Check if this key has already been processed
+    cached_response = crud.get_idempotency_key(idempotency_id)
+    if cached_response:
+        return cached_response
+
+    # 2. Process the request (Create Account)
     result = crud.create_account(account)
+
+    # 3. Save the response for future retries
+    crud.save_idempotency_key(idempotency_id, result)
+
     return result
+
 
 @router.get("/{account_id}", response_model=AccountResponse)
 def get_account(account_id: str, current_user: User = Depends(utils.get_current_user)):
@@ -28,6 +48,7 @@ def get_account(account_id: str, current_user: User = Depends(utils.get_current_
         raise HTTPException(status_code=404, detail="Account not found")
     return account
 
+
 @router.put("/{account_id}")
 def update_account(account_id: str, account: AccountUpdate, current_user: User = Depends(utils.get_current_user)):
     """Auth: Clerk, Manager"""
@@ -35,6 +56,7 @@ def update_account(account_id: str, account: AccountUpdate, current_user: User =
     if not success:
         raise HTTPException(status_code=404, detail="Account not found")
     return {"message": "Account updated successfully"}
+
 
 @router.delete("/{account_id}")
 def delete_account(account_id: str, current_user: User = Depends(utils.get_current_user)):

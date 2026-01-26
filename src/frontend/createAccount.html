@@ -139,11 +139,21 @@
         document.getElementById("createAccountForm").addEventListener("submit", async function(event) {
             event.preventDefault();
 
+            // Disable button to prevent double-clicks immediately UI-side
+            const submitBtn = document.querySelector(".btn-submit");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Processing...";
+
             const selectedServices = Array.from(document.querySelectorAll('input[name="services"]:checked'))
                 .map(cb => cb.value).join(",");
 
             const genderEl = document.querySelector('input[name="gender"]:checked');
-            if(!genderEl) { alert("Please select gender"); return; }
+            if(!genderEl) {
+                alert("Please select gender");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Application";
+                return;
+            }
 
             const accountData = {
                 account_holder_name: document.getElementById("accountHolderName").value,
@@ -161,10 +171,17 @@
                 agreed_to_terms: document.getElementById("agreedToTerms").checked
             };
 
+            // --- 2. NEW: Generate Key once per submission attempt ---
+            // Modern JavaScript (Equivalent to uuid.uuid4())
+            const idempotencyKey = crypto.randomUUID();
+
             try {
                 const response = await authFetch(`${BASE_URL}/accounts`, {
                     method: "POST",
-                    headers: {"Content-Type": "application/json"},
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Idempotency-Id": idempotencyKey // <--- Added Header
+                    },
                     body: JSON.stringify(accountData)
                 });
 
@@ -172,12 +189,17 @@
                     const result = await response.json();
                     alert(`Account Created! ID: ${result.account_id}`);
                     window.location.href = "/home_page.html";
-                } else if (response) {
-                    alert("Failed to create account.");
+                } else {
+                    // Re-enable button on failure so they can try again (with a NEW key)
+                    alert("Failed to create account. Please check inputs.");
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Submit Application";
                 }
             } catch (error) {
                 console.error(error);
                 alert("Error submitting form.");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Application";
             }
         });
 
