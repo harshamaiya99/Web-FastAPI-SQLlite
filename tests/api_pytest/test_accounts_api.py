@@ -1,15 +1,15 @@
 import os
 import pytest
 import allure
-from tests.api_pytest.utils.csv_reader import read_csv
-from tests.api_pytest.utils.expected_response import ExpectedResponse
 
+from tests.api_pytest.utils.get_data_with_markers import get_data_with_markers
+from tests.api_pytest.utils.expected_response import ExpectedResponse
 from tests.api_pytest.utils.allure_logger import assert_json_match
 
-DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "accounts.csv")
+TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "accounts.csv")
 
-test_data = read_csv(DATA_FILE)
-
+# Load the processed data
+test_data = get_data_with_markers(TEST_DATA_FILE)
 
 @allure.epic("API Test - Pytest")
 @allure.feature("End-to-End test flow")

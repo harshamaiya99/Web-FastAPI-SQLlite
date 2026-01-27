@@ -1,7 +1,7 @@
 import pytest
 import allure
 import os
-from tests.web_playwright.utils.csv_reader import read_csv_data
+from tests.web_playwright.utils.get_data_with_markers import get_data_with_markers
 
 from dotenv import load_dotenv
 
@@ -10,10 +10,11 @@ load_dotenv()
 
 TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "test_data_negative.csv")
 
+test_data = get_data_with_markers(TEST_DATA_FILE)
 
 @allure.epic("Web UI Test - Playwright")
 @allure.feature("Negative Scenarios")
-@pytest.mark.parametrize("row", read_csv_data(TEST_DATA_FILE), ids=lambda r: r["tc_name"])
+@pytest.mark.parametrize("row", test_data, ids=lambda r: r["tc_name"])
 def test_negative_scenarios(login_page, home_page, create_page, details_page, row):
     """
     Handles multiple negative testing contexts:
