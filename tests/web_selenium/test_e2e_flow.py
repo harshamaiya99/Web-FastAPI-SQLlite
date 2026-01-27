@@ -1,8 +1,8 @@
 import pytest
 import allure
 import os
+from tests.web_selenium.utils.get_data_with_markers import get_data_with_markers
 # Import your Selenium Utils
-from tests.web_selenium.utils.csv_reader import read_csv_data
 from tests.web_selenium.utils.assertion_logger import assert_ui_match, assert_message_match, assert_message_contains
 
 from dotenv import load_dotenv
@@ -13,9 +13,11 @@ load_dotenv()
 # Point to data file
 TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "test_data.csv")
 
+test_data = get_data_with_markers(TEST_DATA_FILE)
+
 @allure.epic("Web UI Test - Selenium")
 @allure.feature("End-to-End test flow")
-@pytest.mark.parametrize("row", read_csv_data(TEST_DATA_FILE), ids=lambda r: r["account_holder_name"])
+@pytest.mark.parametrize("row", test_data, ids=lambda r: r["account_holder_name"])
 def test_end_to_end_crud(login_page, home_page, create_page, details_page, row):
     """
     Executes a full lifecycle test for each user in the CSV:

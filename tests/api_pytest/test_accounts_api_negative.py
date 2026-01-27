@@ -3,10 +3,11 @@ import uuid
 
 import pytest
 import allure
-from tests.api_pytest.utils.csv_reader import read_csv
+from tests.api_pytest.utils.get_data_with_markers import get_data_with_markers
 
-DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "accounts_negative.csv")
-test_data = read_csv(DATA_FILE)
+TEST_DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "accounts_negative.csv")
+# Load the processed data
+test_data = get_data_with_markers(TEST_DATA_FILE)
 
 
 @allure.epic("API Test - Pytest")
